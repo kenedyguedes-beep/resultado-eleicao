@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultados</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f5f8;
+      color: #172033;
+    }
+    main {
+      width: min(900px, 100%);
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 8px 0 24px;
+      text-align: center;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+    .resultado {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 16px 0;
+      padding: 24px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(20, 30, 50, .08);
+    }
+    .nome {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+    .valor {
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    #status {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1rem;
+      color: #596579;
+    }
+    @media (max-width: 480px) {
+      body { padding: 14px; }
+      .resultado { padding: 18px; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Resultados</h1>
+
+    <section class="resultado">
+      <div class="nome" id="nome1">Carregando...</div>
+      <div class="valor" id="valor1">—</div>
+    </section>
+
+    <section class="resultado">
+      <div class="nome" id="nome2">Carregando...</div>
+      <div class="valor" id="valor2">—</div>
+    </section>
+
+    <div id="status">Conectando ao servidor...</div>
+  </main>
+
+  <script>
+    const URL_DADOS =
+      "https://eleicao-3a373-default-rtdb.firebaseio.com/resultados.json";
+
+    function mostrarValor(valor) {
+      if (valor === null || valor === undefined || valor === "") return "—";
+      if (typeof valor === "number") return valor.toLocaleString("pt-BR");
+      return String(valor);
+    }
+
+    async function atualizar() {
+      const status = document.getElementById("status");
+      try {
+        const resposta = await fetch(URL_DADOS + "?t=" + Date.now(), {
+          cache: "no-store"
+        });
+        if (!resposta.ok) {
+          throw new Error("HTTP " + resposta.status);
+        }
+
+        const dados = await resposta.json();
+        if (!dados) {
+          status.textContent = "Ainda não há resultados publicados.";
+          return;
+        }
+
+        document.getElementById("nome1").textContent = dados.nome1 ?? "Nome 1";
+        document.getElementById("valor1").textContent = mostrarValor(dados.valor1);
+        document.getElementById("nome2").textContent = dados.nome2 ?? "Nome 2";
+        document.getElementById("valor2").textContent = mostrarValor(dados.valor2);
+
+        status.textContent =
+          "Atualização automática a cada 2 segundos • Última consulta: " +
+          new Date().toLocaleTimeString("pt-BR");
+      } catch (erro) {
+        status.textContent =
+          "Não foi possível carregar os dados. Verifique a conexão e as regras de leitura do Firebase.";
+      }
+    }
+
+    atualizar();
+    setInterval(atualizar, 2000);
+  </script>
+</body>
+</html>
