@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Resultados</title>
+  <title>Projeção Final</title>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -20,14 +20,15 @@
     }
     h1 {
       margin: 8px 0 24px;
+      color: #1769d2;
       text-align: center;
       font-size: clamp(2rem, 5vw, 3.5rem);
     }
     .resultado {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 20px;
+      justify-content: flex-start;
+      gap: 16px;
       margin: 16px 0;
       padding: 24px;
       background: white;
@@ -35,11 +36,15 @@
       box-shadow: 0 4px 18px rgba(20, 30, 50, .08);
     }
     .nome {
+      flex: 0 1 auto;
       font-size: clamp(1.5rem, 4vw, 2.5rem);
       font-weight: 700;
       overflow-wrap: anywhere;
     }
+    .nome1 { color: #0057ff; }
+    .nome2 { color: #d62828; }
     .valor {
+      flex: 0 0 auto;
       font-size: clamp(2rem, 6vw, 4rem);
       font-weight: 800;
       font-variant-numeric: tabular-nums;
@@ -59,15 +64,15 @@
 </head>
 <body>
   <main>
-    <h1>Resultados</h1>
+    <h1>Projeção Final:</h1>
 
     <section class="resultado">
-      <div class="nome" id="nome1">Carregando...</div>
+      <div class="nome nome1" id="nome1">Carregando...</div>
       <div class="valor" id="valor1">—</div>
     </section>
 
     <section class="resultado">
-      <div class="nome" id="nome2">Carregando...</div>
+      <div class="nome nome2" id="nome2">Carregando...</div>
       <div class="valor" id="valor2">—</div>
     </section>
 
@@ -106,7 +111,7 @@
         document.getElementById("valor2").textContent = mostrarValor(dados.valor2);
 
         status.textContent =
-          "Atualização automática a cada 2 segundos • Última consulta: " +
+          "Atualização automática a cada 60 segundos • Última consulta: " +
           new Date().toLocaleTimeString("pt-BR");
       } catch (erro) {
         status.textContent =
@@ -115,7 +120,7 @@
     }
 
     atualizar();
-    setInterval(atualizar, 2000);
+    setInterval(atualizar, 60000);
   </script>
 </body>
 </html>
