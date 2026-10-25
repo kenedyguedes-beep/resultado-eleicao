@@ -1,12 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Projeção Final</title>
+
   <style>
-    :root { color-scheme: light; }
-    * { box-sizing: border-box; }
+    :root {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 24px;
@@ -14,35 +22,63 @@
       background: #f3f5f8;
       color: #172033;
     }
+
     main {
       width: min(900px, 100%);
       margin: 0 auto;
     }
+
     h1 {
       margin: 8px 0 24px;
       color: #1769d2;
       text-align: center;
       font-size: clamp(2rem, 5vw, 3.5rem);
     }
+
     .resultado {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      gap: 16px;
-      margin: 16px 0;
-      padding: 24px;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 12px 0;
+      padding: 18px;
       background: white;
       border-radius: 16px;
       box-shadow: 0 4px 18px rgba(20, 30, 50, .08);
     }
+
+    .identificacao {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .foto-candidato {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 50%;
+      flex: 0 0 48px;
+      border: 2px solid #e2e8f0;
+    }
+
     .nome {
-      flex: 0 1 auto;
-      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      min-width: 0;
+      font-size: clamp(1.2rem, 3.5vw, 2.2rem);
       font-weight: 700;
       overflow-wrap: anywhere;
     }
-    .nome1 { color: #0057ff; }
-    .nome2 { color: #d62828; }
+
+    .nome1 {
+      color: #0057ff;
+    }
+
+    .nome2 {
+      color: #d62828;
+    }
+
     .valor {
       flex: 0 0 auto;
       font-size: clamp(2rem, 6vw, 4rem);
@@ -50,29 +86,60 @@
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
+
     #status {
       margin-top: 20px;
       text-align: center;
       font-size: 1rem;
       color: #596579;
     }
+
     @media (max-width: 480px) {
-      body { padding: 14px; }
-      .resultado { padding: 18px; gap: 12px; }
+      body {
+        padding: 14px;
+      }
+
+      .resultado {
+        padding: 14px;
+        gap: 8px;
+      }
+
+      .foto-candidato {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+      }
     }
   </style>
 </head>
+
 <body>
   <main>
     <h1>Projeção Final:</h1>
 
     <section class="resultado">
-      <div class="nome nome1" id="nome1">Carregando...</div>
+      <div class="identificacao">
+        <img
+          class="foto-candidato"
+          src="flavio.jpg"
+          alt="Foto de Flávio"
+        >
+        <div class="nome nome1" id="nome1">Carregando...</div>
+      </div>
+
       <div class="valor" id="valor1">—</div>
     </section>
 
     <section class="resultado">
-      <div class="nome nome2" id="nome2">Carregando...</div>
+      <div class="identificacao">
+        <img
+          class="foto-candidato"
+          src="lula.jpg"
+          alt="Foto de Lula"
+        >
+        <div class="nome nome2" id="nome2">Carregando...</div>
+      </div>
+
       <div class="valor" id="valor2">—</div>
     </section>
 
@@ -84,38 +151,59 @@
       "https://eleicao-3a373-default-rtdb.firebaseio.com/resultados.json";
 
     function mostrarValor(valor) {
-      if (valor === null || valor === undefined || valor === "") return "—";
-      if (typeof valor === "number") return valor.toLocaleString("pt-BR");
+      if (valor === null || valor === undefined || valor === "") {
+        return "—";
+      }
+
+      if (typeof valor === "number") {
+        return valor.toLocaleString("pt-BR");
+      }
+
       return String(valor);
     }
 
     async function atualizar() {
       const status = document.getElementById("status");
+
       try {
-        const resposta = await fetch(URL_DADOS + "?t=" + Date.now(), {
-          cache: "no-store"
-        });
+        const resposta = await fetch(
+          URL_DADOS + "?t=" + Date.now(),
+          { cache: "no-store" }
+        );
+
         if (!resposta.ok) {
           throw new Error("HTTP " + resposta.status);
         }
 
         const dados = await resposta.json();
+
         if (!dados) {
-          status.textContent = "Ainda não há resultados publicados.";
+          status.textContent =
+            "Ainda não há resultados publicados.";
           return;
         }
 
-        document.getElementById("nome1").textContent = dados.nome1 ?? "Nome 1";
-        document.getElementById("valor1").textContent = mostrarValor(dados.valor1);
-        document.getElementById("nome2").textContent = dados.nome2 ?? "Nome 2";
-        document.getElementById("valor2").textContent = mostrarValor(dados.valor2);
+        document.getElementById("nome1").textContent =
+          dados.nome1 ?? "Nome 1";
+
+        document.getElementById("valor1").textContent =
+          mostrarValor(dados.valor1);
+
+        document.getElementById("nome2").textContent =
+          dados.nome2 ?? "Nome 2";
+
+        document.getElementById("valor2").textContent =
+          mostrarValor(dados.valor2);
 
         status.textContent =
-          "Atualização automática a cada 60 segundos • Última consulta: " +
+          "Atualização automática a cada 60 segundos • " +
+          "Última consulta: " +
           new Date().toLocaleTimeString("pt-BR");
+
       } catch (erro) {
         status.textContent =
-          "Não foi possível carregar os dados. Verifique a conexão e as regras de leitura do Firebase.";
+          "Não foi possível carregar os dados. " +
+          "Verifique a conexão e as regras de leitura do Firebase.";
       }
     }
 
